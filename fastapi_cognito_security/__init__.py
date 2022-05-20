@@ -56,7 +56,6 @@ class CognitoBearer(HTTPBearer):
         self,
         *,
         app_client_id: str,
-        region: str,
         userpool_id: str,
         description: str = None,
     ) -> None:
@@ -64,7 +63,7 @@ class CognitoBearer(HTTPBearer):
         self.__decode_async = partial(
             decode_async,
             app_client_id=app_client_id,
-            region=region,
+            region=userpool_id.split("_")[0],
             userpool_id=userpool_id,
         )
 
@@ -80,3 +79,5 @@ class CognitoBearer(HTTPBearer):
             ) from e
         except CognitoJWTException as cje:
             raise HTTPException(status_code=401, detail=str(cje)) from cje
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
